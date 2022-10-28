@@ -4,6 +4,57 @@
 #include "tp3.h"
 
 
+
+void afficherMenu(){
+    printf("1. Remplir une matrice creuse\n"
+           "2. Afficher une matrice creuse sous forme de tableau\n"
+           "3. Afficher une matrice creuse sous forme de listes\n"
+           "4. Donner la valeur d'un élément d'une matrice creuse\n"
+           "5. Affecter une valeur à un élément d'une matrice creuse\n"
+           "6. Additioner deux matrices creuses\n"
+           "7. Calculer le gain en espace en utilisant cette représentation pour une matrice donnée\n"
+           "8. Quitter\n");
+}
+
+char getChoix(){
+    char c = getchar();
+    /* suppression des caracteres dans stdin */
+    fflush(stdin);
+    return c;
+}
+
+// Récupère le nombre de matrices à gérer dans le programme
+int getNbMatrice(){
+    int n;
+    printf("Combien de matrices comptez vous utiliser ? ");
+    scanf("%d", &n);
+    while(n <= 0){
+        printf("Le nombre de matrices ne peut pas être négatif\n");
+        printf("Veuillez rentrer un nombre strictement positif : ");
+        scanf("%d", &n);
+    }
+    return n;
+}
+
+void getSizeMatrice(int *Nlignes, int *Ncolonnes){
+    printf("Entrez le nombre de lignes des matrices à gérer : ");
+    scanf("%d", Nlignes);
+    printf("\nEntrez le nombre de colonnes des matrices à gérer : ");
+    scanf("%d", Ncolonnes);
+}
+
+int getNumMatrice(int max){
+    int n;
+    printf("Quelle est le numéro de la matrice que vous voulez manipuler ? (0 - %d)", max-1);
+    scanf("%d", &n);
+    while(n >= max && n < 0){
+        printf("Le nombre séléctionné est plus grand que le nombre total de matrices ou est négatif\n");
+        printf("Veuillez rentrer un nouveau nombre :");
+        scanf("%d", &n);
+    }
+    return n;
+}
+
 // Fonction qui permet de cr�er un �lement d'une liste cha�n�e
 // Params : indice de colonne (int), valeur de l'�lement (int)
 // Return : pointeur vers le nouvele �lement cr��
