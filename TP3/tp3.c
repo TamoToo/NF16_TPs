@@ -32,7 +32,7 @@ void isPositive(int *n){
 }
 
 void isBetween(int *n, int a, int b){
-    while(*n < a && *n > b){
+    while(*n < a || *n > b){
         printf("Le nombre doit être compris entre %d et %d", a,b);
         printf("Veuillez rentrez un nouveau nombre : ");
         scanf("%d", n);
@@ -59,7 +59,7 @@ void getSizeMatrices(int *Nlignes, int *Ncolonnes){
 
 int getNumMatrice(int max){
     int n;
-    printf("Quelle est le numéro de la matrice que vous voulez manipuler ? [0 - %d]", max-1);
+    printf("Quel est le numéro de la matrice que vous voulez manipuler ? [0 - %d]", max-1);
     scanf("%d", &n);
     isBetween(&n,0,max);
     return n;
@@ -67,17 +67,17 @@ int getNumMatrice(int max){
 
 int getLigne(int max){
     int i;
-    printf("Quelle est le numéro de la ligne que vous voulez ?");
+    printf("Quel est le numéro de la ligne que vous voulez ?");
     scanf("%d", &i);
-    isBetween(&i,0,max);
+    isBetween(&i,0,max-1);
     return i;
 }
 
 int getColonne(int max){
     int j;
-    printf("Quelle est le numéro de la colonne que vous voulez ?");
+    printf("Quel est le numéro de la colonne que vous voulez ?");
     scanf("%d", &j);
-    isBetween(&j,0,max);
+    isBetween(&j,0,max-1);
     return j;
 }
 
@@ -99,6 +99,11 @@ element *creerElement(int colonne, int valeur) {
     return nouvelElement;
 }
 
+liste_ligne inserer_tete(element *e, liste_ligne l){
+    e->suivant = l;
+    return e;
+}
+
 liste_ligne inserer_queue(element *e, liste_ligne l){
     if(l == NULL){
         return e;
@@ -110,7 +115,6 @@ liste_ligne inserer_queue(element *e, liste_ligne l){
     tmp->suivant = e;
     return l;
 }
-
 
 void remplirMatrice(matrice_creuse *m, int N, int M) {
     m->tab_lignes = malloc(N*sizeof(liste_ligne));
@@ -170,12 +174,12 @@ void afficherMatriceListes(matrice_creuse m) {
 int rechercherValeur(matrice_creuse m, int i, int j) {
     element *tmp = m.tab_lignes[i];
     while(tmp != NULL){
-        if(tmp->col == j){
+        if(tmp->col == j){ // Si on trouve la valeur dans la ligne i on la renvoie
             return tmp->val;
         }
         tmp = tmp->suivant;
     }
-    return 0;
+    return 0; // Sinon, on renvoie 0 par défaut
 }
 
 
@@ -183,49 +187,51 @@ void affecterValeur(matrice_creuse m, int i, int j, int val) {
     element *tmp = m.tab_lignes[i];
     element *tmp_prev = m.tab_lignes[i];
     element *new_elem = NULL;
-    if(val != 0){
-        if(tmp == NULL){ // aucun élement dans la ligne
-            new_elem = creerElement(j,val);
-            m.tab_lignes[i] = new_elem;
-            new_elem->suivant = NULL;
-        }
-        else if (tmp->suivant == NULL){ // Si il n'y a qu'un seul élément dans la ligne
-            if(j < tmp->col){
-                new_elem = creerElement(j,val);
-                m.tab_lignes[i] = new_elem;
-                new_elem->suivant = tmp;
-            }
-            else if (j > tmp->col){
-                new_elem = creerElement(j,val);
-                tmp->suivant = new_elem;
-                new_elem->suivant = NULL;
-            }
-            else{
-                tmp->val = val;
-            }
+    int prev_val = rechercherValeur(m, i, j);
+    if(prev_val == val){
+        return;
+    }
+    if(prev_val == 0){ // val != 0 --> Insérer un nouveau élément
+        if(tmp == NULL || j < tmp->col){ // Aucun élément dans la ligne OU élément à insérer en tête
+            m.tab_lignes[i] = inserer_tete(creerElement(j,val), m.tab_lignes[i]);
         }
         else{
-            while(tmp != NULL && tmp->col < j){
+            while(tmp != NULL && j > tmp->col){
                 tmp_prev = tmp;
                 tmp = tmp->suivant;
             }
-            if(tmp == NULL) { // Si on est à la fin de la ligne (dernier element)
-                new_elem = creerElement(j, val);
-                tmp_prev->suivant = new_elem;
-                new_elem->suivant = NULL;
+            /* On verifie la condition de sortie de la boucle:
+             * tmp = NULL --> on est arrivé au bout de la liste
+             * j > col --> on doit insérer l'élement à cette position
+             */
+            if(tmp == NULL){
+                m.tab_lignes[i] = inserer_queue(creerElement(j,val), m.tab_lignes[i]);
             }
             else{
-                if(tmp->col > j){
-                    new_elem = creerElement(j,val);
-                    tmp_prev->suivant = new_elem;
-                    new_elem->suivant = tmp;
-                }
-                else{
-                    tmp->val = val;
-                }
+                new_elem = creerElement(j, val);
+                tmp_prev->suivant = new_elem;
+                new_elem->suivant = tmp;
             }
         }
+        return;
     }
+    // prev_val != 0 --> L'élément que l'on cherche à modifier EXISTE TOUJOURS
+    while(j != tmp->col){
+        tmp_prev = tmp;
+        tmp = tmp->suivant;
+    }
+    if(val == 0){ // Supprimer un élément
+        if(tmp == tmp_prev){ // Si l'élément a supprimé est le premier de la liste
+            m.tab_lignes[i] = tmp->suivant;
+        }
+        else{
+            tmp_prev->suivant = tmp->suivant;
+        }
+        free(tmp);
+        return;
+    }
+    // On change simplement l'ancienne valeur par la nouvelle (!=0)
+    tmp->val = val;
 }
 
 
@@ -233,7 +239,10 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
     int Nlignes = m1.Nlignes;
     for(int i=0;i<Nlignes;i++){
         element *tmp1 = m1.tab_lignes[i];
+        element *tmp1_prev = m1.tab_lignes[i];
         element *tmp2 = m2.tab_lignes[i];
+        element *tmp2_prev = m2.tab_lignes[i];
+        element *new_elem = NULL;
         /* Tant qu'il y a des éléments dans les 2 listes, 3 cas se présentes :
             - 1 : la colonne de m1 > la colonne de m2 => val de m2 doit être ajoutée à m1 et on passe a la valeur suivante dans m2
             - 2 : les deux colonnes sont égales (les deux entiers se trouvent au même endroit) => on somme les deux entiers et on passe aux valeurs suivantes dans m1 et m2
@@ -241,11 +250,13 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
          */
         while(tmp1 != NULL && tmp2 != NULL){
             if(tmp1->col > tmp2->col){
-                affecterValeur(m1, i,tmp2->col,tmp2->val);
+                new_elem = creerElement(tmp2->col, tmp2->val);
+                new_elem->suivant = tmp1;
+                tmp1 = new_elem;
                 tmp2 = tmp2->suivant;
             }
             else if(tmp1->col == tmp2->col){
-                affecterValeur(m1, i,tmp1->col, tmp1->val + tmp2->val);
+                tmp1->val += tmp2->val;
                 tmp1 = tmp1->suivant;
                 tmp2 = tmp2->suivant;
             }
@@ -255,7 +266,9 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
         }
         // Si on est sortie de la boucle précédente car tmp1 = NULL, il faut ajouter les valeurs restantes de tmp2 a tmp1.
         while(tmp2 != NULL){
-            affecterValeur(m1, i,tmp2->col,tmp2->val);
+            new_elem = creerElement(tmp2->col, tmp2->val);
+            new_elem->suivant = tmp1;
+            tmp1 = new_elem;
             tmp2 = tmp2->suivant;
         }
     }

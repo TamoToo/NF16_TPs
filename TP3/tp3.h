@@ -28,6 +28,8 @@ int rechercherValeur(matrice_creuse m, int i, int j);
 void affecterValeur(matrice_creuse m, int i, int j, int val);
 void additionerMatrices(matrice_creuse m1, matrice_creuse m2);
 int nombreOctetsGagnes(matrice_creuse m);
+liste_ligne inserer_tete(element *e, liste_ligne l);
+liste_ligne inserer_queue(element *e, liste_ligne l);
 void afficherMenu();
 char getChoix();
 void isPositive(int *n);
