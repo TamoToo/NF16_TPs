@@ -10,9 +10,9 @@ int main() {
 
     int nb_matrice = getNbMatrice();
     int Nlignes, Ncolonnes;
-    getSizeMatrice(&Nlignes, &Ncolonnes);
+    getSizeMatrices(&Nlignes, &Ncolonnes);
     matrice_creuse *M = malloc(nb_matrice * sizeof(matrice_creuse));
-    int i, j;
+    int num_matrice1, num_matrice2, i, j, val;
     char choix;
     do{
         fflush(stdin);
@@ -21,27 +21,39 @@ int main() {
         switch(choix) {
             case '1':
                 printf("Remplir une matrice creuse\n");
-                i = getNumMatrice(nb_matrice);
-                remplirMatrice(&M[i], Nlignes, Ncolonnes);
+                num_matrice1 = getNumMatrice(nb_matrice);
+                remplirMatrice(&M[num_matrice1], Nlignes, Ncolonnes);
                 break;
             case '2':
                 printf("Afficher une matrice creuse sous forme de tableau\n");
-                i = getNumMatrice(nb_matrice);
-                afficherMatrice(M[i]);
+                num_matrice1 = getNumMatrice(nb_matrice);
+                afficherMatrice(M[num_matrice1]);
                 break;
             case '3':
                 printf("Afficher une matrice creuse sous forme de listes\n");
-                i = getNumMatrice(nb_matrice);
-                afficherMatriceListes(M[i]);
+                num_matrice1 = getNumMatrice(nb_matrice);
+                afficherMatriceListes(M[num_matrice1]);
                 break;
             case '4':
                 printf("Donner la valeur d'un élément d'une matrice creuse\n");
+                num_matrice1 = getNumMatrice(nb_matrice);
+                i = getLigne(Nlignes);
+                j = getColonne(Ncolonnes);
+                rechercherValeur(M[num_matrice1],i,j);
                 break;
             case '5':
                 printf("Affecter une valeur à un élément d'une matrice creuse\n");
+                num_matrice1 = getNumMatrice(nb_matrice);
+                i = getLigne(Nlignes);
+                j = getColonne(Ncolonnes);
+                val = getValue();
+                affecterValeur(M[num_matrice1], i, j, val);
                 break;
             case '6':
                 printf("Additioner deux matrices creuses\n");
+                num_matrice1 = getNumMatrice(nb_matrice);
+                num_matrice2 = getNumMatrice(nb_matrice);
+                additionerMatrices(M[num_matrice1], M[num_matrice2]);
                 break;
             case '7':
                 printf("Calculer le gain en espace en utilisant cette représentation pour une matrice donnée\n");

@@ -23,36 +23,69 @@ char getChoix(){
     return c;
 }
 
+void isPositive(int *n){
+    while(*n <= 0){
+        printf("Le nombre ne peut pas être négatif\n");
+        printf("Veuillez rentrer un nombre strictement positif : ");
+        scanf("%d", n);
+    }
+}
+
+void isBetween(int *n, int a, int b){
+    while(*n < a && *n > b){
+        printf("Le nombre doit être compris entre %d et %d", a,b);
+        printf("Veuillez rentrez un nouveau nombre : ");
+        scanf("%d", n);
+    }
+}
+
 // Récupère le nombre de matrices à gérer dans le programme
 int getNbMatrice(){
     int n;
     printf("Combien de matrices comptez vous utiliser ? ");
     scanf("%d", &n);
-    while(n <= 0){
-        printf("Le nombre de matrices ne peut pas être négatif\n");
-        printf("Veuillez rentrer un nombre strictement positif : ");
-        scanf("%d", &n);
-    }
+    isPositive(&n);
     return n;
 }
 
-void getSizeMatrice(int *Nlignes, int *Ncolonnes){
+void getSizeMatrices(int *Nlignes, int *Ncolonnes){
     printf("Entrez le nombre de lignes des matrices à gérer : ");
     scanf("%d", Nlignes);
+    isPositive(Nlignes);
     printf("\nEntrez le nombre de colonnes des matrices à gérer : ");
     scanf("%d", Ncolonnes);
+    isPositive(Ncolonnes);
 }
 
 int getNumMatrice(int max){
     int n;
-    printf("Quelle est le numéro de la matrice que vous voulez manipuler ? (0 - %d)", max-1);
+    printf("Quelle est le numéro de la matrice que vous voulez manipuler ? [0 - %d]", max-1);
     scanf("%d", &n);
-    while(n >= max && n < 0){
-        printf("Le nombre séléctionné est plus grand que le nombre total de matrices ou est négatif\n");
-        printf("Veuillez rentrer un nouveau nombre :");
-        scanf("%d", &n);
-    }
+    isBetween(&n,0,max);
     return n;
+}
+
+int getLigne(int max){
+    int i;
+    printf("Quelle est le numéro de la ligne que vous voulez ?");
+    scanf("%d", &i);
+    isBetween(&i,0,max);
+    return i;
+}
+
+int getColonne(int max){
+    int j;
+    printf("Quelle est le numéro de la colonne que vous voulez ?");
+    scanf("%d", &j);
+    isBetween(&j,0,max);
+    return j;
+}
+
+int getValue(){
+    int val;
+    printf("Quelle valeur voulez-vous insérer ? ");
+    scanf("%d", &val);
+    return val;
 }
 
 // Fonction qui permet de cr�er un �lement d'une liste cha�n�e

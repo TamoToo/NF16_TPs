@@ -30,8 +30,13 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2);
 int nombreOctetsGagnes(matrice_creuse m);
 void afficherMenu();
 char getChoix();
+void isPositive(int *n);
+void isBetween(int *n, int a, int b);
 int getNbMatrice();
-void getSizeMatrice(int *Nlignes, int *Ncolonnes);
+void getSizeMatrices(int *Nlignes, int *Ncolonnes);
 int getNumMatrice(int max);
+int getLigne(int max);
+int getColonne(int max);
+int getValue();
 
 #endif // TP3_H_INCLUDED
