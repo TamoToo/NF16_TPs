@@ -6,14 +6,14 @@
 
 
 void afficherMenu(){
-    printf("1. Remplir une matrice creuse\n"
+    printf("\n\n1. Remplir une matrice creuse\n"
            "2. Afficher une matrice creuse sous forme de tableau\n"
            "3. Afficher une matrice creuse sous forme de listes\n"
            "4. Donner la valeur d'un élément d'une matrice creuse\n"
            "5. Affecter une valeur à un élément d'une matrice creuse\n"
            "6. Additioner deux matrices creuses\n"
            "7. Calculer le gain en espace en utilisant cette représentation pour une matrice donnée\n"
-           "8. Quitter\n");
+           "8. Quitter\n\n");
 }
 
 char getChoix(){
@@ -283,7 +283,6 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
                 tmp1_prev = tmp1;
                 tmp1 = tmp1->suivant;
             }
-            afficherMatrice(m1);
         }
         // Si on est sortie de la boucle précédente car tmp1 = NULL, il faut ajouter les valeurs restantes de tmp2 a tmp1.
         if(tmp1 == NULL){

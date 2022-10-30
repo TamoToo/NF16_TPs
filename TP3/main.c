@@ -39,7 +39,7 @@ int main() {
                 num_matrice1 = getNumMatrice(nb_matrice);
                 i = getLigne(Nlignes);
                 j = getColonne(Ncolonnes);
-                printf("La valeur de M%d[%d][%d] est : %d", num_matrice1, i, j, rechercherValeur(M[num_matrice1],i,j));
+                printf("La valeur de M%d[%d][%d] est : %d\n", num_matrice1, i, j, rechercherValeur(M[num_matrice1],i,j));
                 break;
             case '5':
                 printf("Affecter une valeur à un élément d'une matrice creuse\n");
@@ -58,7 +58,7 @@ int main() {
             case '7':
                 printf("Calculer le gain en espace en utilisant cette représentation pour une matrice donnée\n");
                 num_matrice1 = getNumMatrice(nb_matrice);
-                printf("Le nombre d'octets gagnés avec cette représentation pour la matrice M%d est de : %d octets", num_matrice1, nombreOctetsGagnes(M[num_matrice1]));
+                printf("Le nombre d'octets gagnés avec cette représentation pour la matrice M%d est de : %d octets\n", num_matrice1, nombreOctetsGagnes(M[num_matrice1]));
                 break;
             case '8':
                 printf("Quitter\n");
