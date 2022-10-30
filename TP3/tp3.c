@@ -116,6 +116,20 @@ liste_ligne inserer_queue(element *e, liste_ligne l){
     return l;
 }
 
+void libererMatrice(matrice_creuse m){
+    element *tmp;
+    element *free_tmp;
+    for (int i=0; i<m.Nlignes; i++){
+        tmp = m.tab_lignes[i];
+        while(tmp != NULL){
+            free_tmp = tmp;
+            tmp = tmp->suivant;
+            free(free_tmp);
+        }
+        free(m.tab_lignes[i]);
+    }
+}
+
 void remplirMatrice(matrice_creuse *m, int N, int M) {
     m->tab_lignes = malloc(N*sizeof(liste_ligne));
     m->Nlignes = N;
@@ -241,9 +255,8 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
         element *tmp1 = m1.tab_lignes[i];
         element *tmp1_prev = m1.tab_lignes[i];
         element *tmp2 = m2.tab_lignes[i];
-        element *tmp2_prev = m2.tab_lignes[i];
         element *new_elem = NULL;
-        /* Tant qu'il y a des éléments dans les 2 listes, 3 cas se présentes :
+        /* Tant qu'il y a des éléments dans les 2 listes, 3 cas se présentent :
             - 1 : la colonne de m1 > la colonne de m2 => val de m2 doit être ajoutée à m1 et on passe a la valeur suivante dans m2
             - 2 : les deux colonnes sont égales (les deux entiers se trouvent au même endroit) => on somme les deux entiers et on passe aux valeurs suivantes dans m1 et m2
             - 3 : la colonne de m1 < la colonne de m2 => on ne fait rien, on passe simplement à la prochaine valeur de m1
@@ -251,33 +264,54 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
         while(tmp1 != NULL && tmp2 != NULL){
             if(tmp1->col > tmp2->col){
                 new_elem = creerElement(tmp2->col, tmp2->val);
-                new_elem->suivant = tmp1;
-                tmp1 = new_elem;
+                if(tmp1 == tmp1_prev){ // S'il n'y a aucun élément dans la ligne de m1 (tmp1 = tmp1_prev = NULL), on insère le nouveau élément en tête de la liste de m1
+                    m1.tab_lignes[i] =  inserer_tete(new_elem, m1.tab_lignes[i]);
+                }
+                else{
+                    new_elem->suivant = tmp1;
+                    tmp1_prev->suivant = new_elem;
+                }
                 tmp2 = tmp2->suivant;
             }
             else if(tmp1->col == tmp2->col){
                 tmp1->val += tmp2->val;
+                tmp1_prev = tmp1;
                 tmp1 = tmp1->suivant;
                 tmp2 = tmp2->suivant;
             }
             else{
+                tmp1_prev = tmp1;
                 tmp1 = tmp1->suivant;
             }
+            afficherMatrice(m1);
         }
         // Si on est sortie de la boucle précédente car tmp1 = NULL, il faut ajouter les valeurs restantes de tmp2 a tmp1.
-        while(tmp2 != NULL){
-            new_elem = creerElement(tmp2->col, tmp2->val);
-            new_elem->suivant = tmp1;
-            tmp1 = new_elem;
-            tmp2 = tmp2->suivant;
+        if(tmp1 == NULL){
+            if(tmp1 == tmp1_prev){ // S'il n'y a aucun élément dans la ligne de m1 (tmp1 = tmp1_prev = NULL)
+                m1.tab_lignes[i] =  m2.tab_lignes[i];
+            }
+            else{
+                tmp1_prev->suivant = tmp2;
+            }
         }
     }
 }
 
 
 int nombreOctetsGagnes(matrice_creuse m) {
-
-  /*Ecrire ici le code de cette fonction*/
-
+    int res = 0;
+    element *tmp;
+    for (int i=0; i<m.Nlignes; i++){
+        tmp = m.tab_lignes[i];
+        while(tmp != NULL){
+            res++;
+            tmp = tmp->suivant;
+        }
+    }
+    res *= sizeof(element); // taille de tous les noeuds représentés
+    res += m.Nlignes * sizeof(liste_ligne); // taille de tous les noeuds + toutes les lignes
+    res += sizeof(matrice_creuse); // taille de tous les noeuds + toutes les lignes + taille d'une matrice
+    res = m.Ncolonnes * m.Nlignes * sizeof(int) - res; // N*M*taille d'un entier - taille de notre représentation
+    return res;
 }
 

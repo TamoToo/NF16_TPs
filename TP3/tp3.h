@@ -21,6 +21,7 @@ typedef struct MatriceCreuse {
 }matrice_creuse;
 
 
+void libererMatrice(matrice_creuse m);
 void remplirMatrice(matrice_creuse *m, int N, int M);
 void afficherMatrice(matrice_creuse m);
 void afficherMatriceListes(matrice_creuse m);
