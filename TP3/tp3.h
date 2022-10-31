@@ -1,7 +1,6 @@
 #ifndef TP3_H_INCLUDED
 #define TP3_H_INCLUDED
 
-
 // STRUCTURE ELEMENT
 typedef struct Element {
     int col;
@@ -11,7 +10,6 @@ typedef struct Element {
 
 // TYPE LISTE_LIGNE
 typedef element *liste_ligne;
-
 
 // STRUCTURE MATRICE CREUSE
 typedef struct MatriceCreuse {
@@ -38,8 +36,7 @@ void isBetween(int *n, int a, int b);
 int getNbMatrice();
 void getSizeMatrices(int *Nlignes, int *Ncolonnes);
 int getNumMatrice(int max);
-int getLigne(int max);
-int getColonne(int max);
+void getLigneColonne(int *i, int *j, int maxL, int maxC);
 int getValue();
 
 #endif // TP3_H_INCLUDED
