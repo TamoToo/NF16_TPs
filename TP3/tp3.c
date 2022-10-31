@@ -119,8 +119,8 @@ void libererMatrice(matrice_creuse m) {
             tmp = tmp -> suivant;
             free(free_tmp);
         }
-        free(m.tab_lignes[i]);
     }
+    free(m.tab_lignes);
 }
 
 void remplirMatrice(matrice_creuse *m, int N, int M) {
