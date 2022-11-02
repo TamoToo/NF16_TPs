@@ -56,7 +56,9 @@ int main() {
             case '8':
                 printf("\t\tQuitter\n");
                 for (int k = 0; k < nb_matrice; k++) {
-                    libererMatrice(M[k]);
+                    if(M[k].Nlignes == Nlignes){ // Si la matrice a été remplie
+                        libererMatrice(M[k]);
+                    }
                 }
                 free(M);
                 break;

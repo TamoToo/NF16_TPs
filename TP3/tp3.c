@@ -124,7 +124,7 @@ void libererMatrice(matrice_creuse m) {
 }
 
 void remplirMatrice(matrice_creuse *m, int N, int M) {
-    m->tab_lignes = malloc(N * sizeof(liste_ligne)); // realloc ?
+    m->tab_lignes = malloc(N * sizeof(liste_ligne)); // realloc pour éviter de ré-allouer de l'espace lorsque l'on modifie une matrice déja créer ?
     m->Nlignes = N;
     m->Ncolonnes = M;
     int new_val;
@@ -132,7 +132,7 @@ void remplirMatrice(matrice_creuse *m, int N, int M) {
         m->tab_lignes[i] = NULL;
         for (int j = 0; j < M; j++) {
             printf("\nEntrez l'entier [%d][%d] : ", i, j);
-            scanf("%d", & new_val);
+            scanf("%d", &new_val);
             if (new_val != 0) {
                 m->tab_lignes[i] = inserer_queue(creerElement(j, new_val), m->tab_lignes[i]);
             }
@@ -141,13 +141,11 @@ void remplirMatrice(matrice_creuse *m, int N, int M) {
 }
 
 void afficherMatrice(matrice_creuse m) {
-    int Nlignes = m.Nlignes;
-    int Ncolonnes = m.Ncolonnes;
     element *tmp = NULL;
     printf("\n\n");
-    for (int i = 0; i < Nlignes; i++) {
+    for (int i = 0; i < m.Nlignes; i++) {
         tmp = m.tab_lignes[i];
-        for (int j = 0; j < Ncolonnes; j++) {
+        for (int j = 0; j < m.Ncolonnes; j++) {
             if (tmp != NULL && tmp->col == j) {
                 printf("%d ", tmp->val);
                 tmp = tmp->suivant;
@@ -160,10 +158,9 @@ void afficherMatrice(matrice_creuse m) {
 }
 
 void afficherMatriceListes(matrice_creuse m) {
-    int Nlignes = m.Nlignes;
     element *tmp = NULL;
     printf("\n\n");
-    for (int i = 0; i < Nlignes; i++) {
+    for (int i = 0; i < m.Nlignes; i++) {
         tmp = m.tab_lignes[i];
         printf("Ligne %d : ", i);
         if (tmp == NULL) {
@@ -232,7 +229,7 @@ void affecterValeur(matrice_creuse m, int i, int j, int val) {
         free(tmp);
         return;
     }
-    // On change simplement l'ancienne valeur par la nouvelle (!=0)
+    // val !=0 --> On change simplement l'ancienne valeur par la nouvelle (!=0)
     tmp->val = val;
 }
 
@@ -251,7 +248,7 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
         while (tmp1 != NULL && tmp2 != NULL) {
             if (tmp1->col > tmp2->col) {
                 new_elem = creerElement(tmp2->col, tmp2->val);
-                if (tmp1 == tmp1_prev) { // S'il n'y a aucun élément dans la ligne de m1 (tmp1 = tmp1_prev = NULL), on insère le nouveau élément en tête de la liste de m1
+                if (tmp1 == tmp1_prev) { // S'il n'y a qu'un seul élément dans la ligne de m1 (tmp1 = tmp1_prev), on insère le nouveau élément en tête de la liste de m1
                     m1.tab_lignes[i] = inserer_tete(new_elem, m1.tab_lignes[i]);
                 } else {
                     new_elem->suivant = tmp1;
@@ -268,11 +265,12 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
                 tmp1 = tmp1->suivant;
             }
         }
-        // Si on est sortie de la boucle précédente car tmp1 = NULL, il faut ajouter les valeurs restantes de tmp2 a tmp1.
+        // Si on est sortie de la boucle précédente car tmp1 = NULL, il faut ajouter les valeurs restantes de tmp2 a tmp1
+        // Sinon on a fini car les valeurs restantes sont déjà présentes dans m1
         if (tmp1 == NULL) {
-            if (tmp1 == tmp1_prev) { // S'il n'y a aucun élément dans la ligne de m1 (tmp1 = tmp1_prev = NULL)
+            if (tmp1 == tmp1_prev) { // S'il n'y a aucun élément dans la ligne de m1 (tmp1 = tmp1_prev = NULL), la ligne de m1 = la ligne de m2
                 m1.tab_lignes[i] = m2.tab_lignes[i];
-            } else {
+            } else { // Sinon, on ajoute la suite de la liste de m2 au suivant du précédent de tmp1
                 tmp1_prev->suivant = tmp2;
             }
         }
