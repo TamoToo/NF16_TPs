@@ -65,7 +65,7 @@ int getNumMatrice(int max) {
     return n;
 }
 
-void getLigneColonne(int * i, int * j, int maxL, int maxC) {
+void getLigneColonne(int *i, int *j, int maxL, int maxC) {
     printf("\nQuel est le numéro de la ligne que vous voulez ? ");
     scanf("%d", i);
     isBetween(i, 0, maxL - 1);
@@ -86,14 +86,14 @@ int getValue() {
 // Return : pointeur vers le nouvele �lement cr��
 element * creerElement(int colonne, int valeur) {
     element * nouvelElement = malloc(sizeof(element));
-    nouvelElement -> col = colonne;
-    nouvelElement -> val = valeur;
-    nouvelElement -> suivant = NULL;
+    nouvelElement->col = colonne;
+    nouvelElement->val = valeur;
+    nouvelElement->suivant = NULL;
     return nouvelElement;
 }
 
 liste_ligne inserer_tete(element * e, liste_ligne l) {
-    e -> suivant = l;
+    e->suivant = l;
     return e;
 }
 
@@ -102,10 +102,10 @@ liste_ligne inserer_queue(element * e, liste_ligne l) {
         return e;
     }
     element * tmp = l;
-    while (tmp -> suivant != NULL) {
-        tmp = tmp -> suivant;
+    while (tmp->suivant != NULL) {
+        tmp = tmp->suivant;
     }
-    tmp -> suivant = e;
+    tmp->suivant = e;
     return l;
 }
 
@@ -116,7 +116,7 @@ void libererMatrice(matrice_creuse m) {
         tmp = m.tab_lignes[i];
         while (tmp != NULL) {
             free_tmp = tmp;
-            tmp = tmp -> suivant;
+            tmp = tmp->suivant;
             free(free_tmp);
         }
     }
@@ -124,7 +124,7 @@ void libererMatrice(matrice_creuse m) {
 }
 
 void remplirMatrice(matrice_creuse *m, int N, int M) {
-    m->tab_lignes = malloc(N * sizeof(liste_ligne));
+    m->tab_lignes = malloc(N * sizeof(liste_ligne)); // realloc ?
     m->Nlignes = N;
     m->Ncolonnes = M;
     int new_val;
