@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "tp3.h"
 
 void afficherMenu() {
@@ -25,7 +24,7 @@ char getChoix() {
 
 void isPositive(int * n) {
     while (*n <= 0) {
-        printf("Le nombre ne peut pas être négatif\n");
+        printf("Le nombre ne peut pas être négatif ou nul\n");
         printf("Veuillez rentrer un nombre strictement positif : ");
         scanf("%d", n);
     }
@@ -42,12 +41,13 @@ void isBetween(int *n, int a, int b) {
 // Récupère le nombre de matrices à gérer dans le programme
 int getNbMatrice() {
     int n;
-    printf("Combien de matrices comptez vous utiliser ? ");
+    printf("\nCombien de matrices comptez vous utiliser ? ");
     scanf("%d", &n);
     isPositive(&n);
     return n;
 }
 
+// Récupère la taille des matrices à gérer dans le programme
 void getSizeMatrices(int *Nlignes, int *Ncolonnes) {
     printf("\nEntrez le nombre de lignes des matrices à gérer : ");
     scanf("%d", Nlignes);
@@ -57,14 +57,16 @@ void getSizeMatrices(int *Nlignes, int *Ncolonnes) {
     isPositive(Ncolonnes);
 }
 
+// Récupère le numéro de la matrice que l'on cherche à manipuler
 int getNumMatrice(int max) {
     int n;
-    printf("Quel est le numéro de la matrice que vous voulez manipuler ? [0 - %d] ", max - 1);
+    printf("\nQuel est le numéro de la matrice que vous voulez manipuler ? [0 - %d] ", max - 1);
     scanf("%d", &n);
     isBetween(&n, 0, max - 1);
     return n;
 }
 
+// Récupère le numéro de la ligne et de la colonne de la matrice que l'on cherche à manipuler
 void getLigneColonne(int *i, int *j, int maxL, int maxC) {
     printf("\nQuel est le numéro de la ligne que vous voulez ? ");
     scanf("%d", i);
@@ -74,6 +76,7 @@ void getLigneColonne(int *i, int *j, int maxL, int maxC) {
     isBetween(j, 0, maxC - 1);
 }
 
+// Récupère la valeur que l'on veut insérer dans la fonction affecterValeur
 int getValue() {
     int val;
     printf("\nQuelle valeur voulez-vous insérer ? ");
@@ -81,22 +84,13 @@ int getValue() {
     return val;
 }
 
-// Fonction qui permet de cr�er un �lement d'une liste cha�n�e
-// Params : indice de colonne (int), valeur de l'�lement (int)
-// Return : pointeur vers le nouvele �lement cr��
-element * creerElement(int colonne, int valeur) {
-    element * nouvelElement = malloc(sizeof(element));
-    nouvelElement->col = colonne;
-    nouvelElement->val = valeur;
-    nouvelElement->suivant = NULL;
-    return nouvelElement;
-}
-
+// Insère un élément en tête d'une liste_ligne
 liste_ligne inserer_tete(element * e, liste_ligne l) {
     e->suivant = l;
     return e;
 }
 
+// Insère un élément à la fin d'une liste_ligne
 liste_ligne inserer_queue(element * e, liste_ligne l) {
     if (l == NULL) {
         return e;
@@ -109,6 +103,7 @@ liste_ligne inserer_queue(element * e, liste_ligne l) {
     return l;
 }
 
+// Libère la mémoire d'une matrice creuse
 void libererMatrice(matrice_creuse m) {
     element *tmp;
     element *free_tmp;
@@ -123,18 +118,29 @@ void libererMatrice(matrice_creuse m) {
     free(m.tab_lignes);
 }
 
+// Fonction qui permet de cr�er un �lement d'une liste cha�n�e
+// Params : indice de colonne (int), valeur de l'�lement (int)
+// Return : pointeur vers le nouvele �lement cr��
+element *creerElement(int colonne, int valeur) {
+    element * nouvelElement = malloc(sizeof(element));
+    nouvelElement->col = colonne;
+    nouvelElement->val = valeur;
+    nouvelElement->suivant = NULL;
+    return nouvelElement;
+}
+
 void remplirMatrice(matrice_creuse *m, int N, int M) {
     m->tab_lignes = malloc(N * sizeof(liste_ligne)); // realloc pour éviter de ré-allouer de l'espace lorsque l'on modifie une matrice déja créer ?
     m->Nlignes = N;
     m->Ncolonnes = M;
-    int new_val;
+    int val;
     for (int i = 0; i < N; i++) {
         m->tab_lignes[i] = NULL;
         for (int j = 0; j < M; j++) {
             printf("\nEntrez l'entier [%d][%d] : ", i, j);
-            scanf("%d", &new_val);
-            if (new_val != 0) {
-                m->tab_lignes[i] = inserer_queue(creerElement(j, new_val), m->tab_lignes[i]);
+            scanf("%d", &val);
+            if (val != 0) {
+                m->tab_lignes[i] = inserer_queue(creerElement(j, val), m->tab_lignes[i]);
             }
         }
     }
@@ -190,9 +196,7 @@ void affecterValeur(matrice_creuse m, int i, int j, int val) {
     element *tmp_prev = m.tab_lignes[i];
     element *new_elem = NULL;
     int prev_val = rechercherValeur(m, i, j);
-    if (prev_val == val) {
-        return;
-    }
+    if (prev_val == val) return;
     if (prev_val == 0) { // val != 0 --> Insérer un nouveau élément
         if (tmp == NULL || j < tmp->col) { // Aucun élément dans la ligne OU élément à insérer en tête
             m.tab_lignes[i] = inserer_tete(creerElement(j, val), m.tab_lignes[i]);
@@ -201,21 +205,22 @@ void affecterValeur(matrice_creuse m, int i, int j, int val) {
                 tmp_prev = tmp;
                 tmp = tmp->suivant;
             }
-            /* On verifie la condition de sortie de la boucle:
-             * tmp = NULL --> on est arrivé au bout de la liste
+            /* On vérifie la condition de sortie de la boucle:
+             * tmp = NULL --> on est arrivé au bout de la liste => on insère l'élément en dernier
              * j > col --> on doit insérer l'élement à cette position
              */
+            new_elem = creerElement(j, val);
+            tmp_prev->suivant = new_elem;
             if (tmp == NULL) {
-                m.tab_lignes[i] = inserer_queue(creerElement(j, val), m.tab_lignes[i]);
+                printf("HERE");
+                new_elem->suivant = NULL;
             } else {
-                new_elem = creerElement(j, val);
-                tmp_prev->suivant = new_elem;
                 new_elem->suivant = tmp;
             }
         }
         return;
     }
-    // prev_val != 0 --> L'élément que l'on cherche à modifier EXISTE TOUJOURS
+    // SINON, prev_val != 0 --> L'élément que l'on cherche à modifier EXISTE TOUJOURS
     while (j != tmp->col) {
         tmp_prev = tmp;
         tmp = tmp->suivant;
@@ -234,8 +239,7 @@ void affecterValeur(matrice_creuse m, int i, int j, int val) {
 }
 
 void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
-    int Nlignes = m1.Nlignes;
-    for (int i = 0; i < Nlignes; i++) {
+    for (int i = 0; i < m1.Nlignes; i++) {
         element *tmp1 = m1.tab_lignes[i];
         element *tmp1_prev = m1.tab_lignes[i];
         element *tmp2 = m2.tab_lignes[i];

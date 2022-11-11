@@ -19,16 +19,6 @@ typedef struct MatriceCreuse {
 }matrice_creuse;
 
 
-void libererMatrice(matrice_creuse m);
-void remplirMatrice(matrice_creuse *m, int N, int M);
-void afficherMatrice(matrice_creuse m);
-void afficherMatriceListes(matrice_creuse m);
-int rechercherValeur(matrice_creuse m, int i, int j);
-void affecterValeur(matrice_creuse m, int i, int j, int val);
-void additionerMatrices(matrice_creuse m1, matrice_creuse m2);
-int nombreOctetsGagnes(matrice_creuse m);
-liste_ligne inserer_tete(element *e, liste_ligne l);
-liste_ligne inserer_queue(element *e, liste_ligne l);
 void afficherMenu();
 char getChoix();
 void isPositive(int *n);
@@ -38,5 +28,16 @@ void getSizeMatrices(int *Nlignes, int *Ncolonnes);
 int getNumMatrice(int max);
 void getLigneColonne(int *i, int *j, int maxL, int maxC);
 int getValue();
+liste_ligne inserer_tete(element *e, liste_ligne l);
+liste_ligne inserer_queue(element *e, liste_ligne l);
+void libererMatrice(matrice_creuse m);
+
+void remplirMatrice(matrice_creuse *m, int N, int M);
+void afficherMatrice(matrice_creuse m);
+void afficherMatriceListes(matrice_creuse m);
+int rechercherValeur(matrice_creuse m, int i, int j);
+void affecterValeur(matrice_creuse m, int i, int j, int val);
+void additionerMatrices(matrice_creuse m1, matrice_creuse m2);
+int nombreOctetsGagnes(matrice_creuse m);
 
 #endif // TP3_H_INCLUDED
