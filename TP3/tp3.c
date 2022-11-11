@@ -92,9 +92,7 @@ liste_ligne inserer_tete(element * e, liste_ligne l) {
 
 // Insère un élément à la fin d'une liste_ligne
 liste_ligne inserer_queue(element * e, liste_ligne l) {
-    if (l == NULL) {
-        return e;
-    }
+    if (l == NULL) return e;
     element * tmp = l;
     while (tmp->suivant != NULL) {
         tmp = tmp->suivant;
@@ -183,9 +181,7 @@ void afficherMatriceListes(matrice_creuse m) {
 int rechercherValeur(matrice_creuse m, int i, int j) {
     element *tmp = m.tab_lignes[i];
     while (tmp != NULL) {
-        if (tmp->col == j) { // Si on trouve la valeur dans la ligne i on la renvoie
-            return tmp->val;
-        }
+        if (tmp->col == j) return tmp->val; // Si on trouve la valeur dans la ligne i on la renvoie
         tmp = tmp->suivant;
     }
     return 0; // Sinon, on renvoie 0 par défaut
@@ -205,18 +201,12 @@ void affecterValeur(matrice_creuse m, int i, int j, int val) {
                 tmp_prev = tmp;
                 tmp = tmp->suivant;
             }
-            /* On vérifie la condition de sortie de la boucle:
-             * tmp = NULL --> on est arrivé au bout de la liste => on insère l'élément en dernier
+             /* tmp = NULL --> on est arrivé au bout de la liste => on insère l'élément en dernier
              * j > col --> on doit insérer l'élement à cette position
              */
             new_elem = creerElement(j, val);
             tmp_prev->suivant = new_elem;
-            if (tmp == NULL) {
-                printf("HERE");
-                new_elem->suivant = NULL;
-            } else {
-                new_elem->suivant = tmp;
-            }
+            new_elem->suivant = tmp;
         }
         return;
     }
