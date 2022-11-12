@@ -29,7 +29,6 @@ int getNumMatrice(int max);
 void getLigneColonne(int *i, int *j, int maxL, int maxC);
 int getValue();
 liste_ligne inserer_tete(element *e, liste_ligne l);
-liste_ligne inserer_queue(element *e, liste_ligne l);
 void libererMatrice(matrice_creuse m);
 
 void remplirMatrice(matrice_creuse *m, int N, int M);

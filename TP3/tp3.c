@@ -90,17 +90,6 @@ liste_ligne inserer_tete(element * e, liste_ligne l) {
     return e;
 }
 
-// Insère un élément à la fin d'une liste_ligne
-liste_ligne inserer_queue(element * e, liste_ligne l) {
-    if (l == NULL) return e;
-    element * tmp = l;
-    while (tmp->suivant != NULL) {
-        tmp = tmp->suivant;
-    }
-    tmp->suivant = e;
-    return l;
-}
-
 // Libère la mémoire d'une matrice creuse
 void libererMatrice(matrice_creuse m) {
     element *tmp;
@@ -131,14 +120,23 @@ void remplirMatrice(matrice_creuse *m, int N, int M) {
     m->tab_lignes = malloc(N * sizeof(liste_ligne)); // realloc pour éviter de ré-allouer de l'espace lorsque l'on modifie une matrice déja créer ?
     m->Nlignes = N;
     m->Ncolonnes = M;
+    element *new_elem, *tmp;
     int val;
     for (int i = 0; i < N; i++) {
         m->tab_lignes[i] = NULL;
+        tmp = NULL;
         for (int j = 0; j < M; j++) {
             printf("\nEntrez l'entier [%d][%d] : ", i, j);
             scanf("%d", &val);
             if (val != 0) {
-                m->tab_lignes[i] = inserer_queue(creerElement(j, val), m->tab_lignes[i]);
+                new_elem = creerElement(j, val);
+                if (m->tab_lignes[i] == NULL){
+                    m->tab_lignes[i] = new_elem;
+                    tmp = new_elem;
+                } else{
+                    tmp->suivant = new_elem;
+                    tmp = tmp->suivant;
+                }
             }
         }
     }
@@ -180,7 +178,7 @@ void afficherMatriceListes(matrice_creuse m) {
 
 int rechercherValeur(matrice_creuse m, int i, int j) {
     element *tmp = m.tab_lignes[i];
-    while (tmp != NULL) {
+    while (tmp != NULL && tmp->col <= j) { // la condition "tmp->col <= j" permet d'éviter de parcourir toute la liste dans certains cas
         if (tmp->col == j) return tmp->val; // Si on trouve la valeur dans la ligne i on la renvoie
         tmp = tmp->suivant;
     }
@@ -242,11 +240,13 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
         while (tmp1 != NULL && tmp2 != NULL) {
             if (tmp1->col > tmp2->col) {
                 new_elem = creerElement(tmp2->col, tmp2->val);
-                if (tmp1 == tmp1_prev) { // S'il n'y a qu'un seul élément dans la ligne de m1 (tmp1 = tmp1_prev), on insère le nouveau élément en tête de la liste de m1
+                if (tmp1 == m1.tab_lignes[i]) { // S'il n'y a qu'un seul élément dans la ligne de m1 (tmp1 = tmp1_prev), on insère le nouvel élément en tête de la liste de m1
                     m1.tab_lignes[i] = inserer_tete(new_elem, m1.tab_lignes[i]);
+                    tmp1_prev = m1.tab_lignes[i];
                 } else {
                     new_elem->suivant = tmp1;
                     tmp1_prev->suivant = new_elem;
+                    tmp1_prev = tmp1_prev->suivant;
                 }
                 tmp2 = tmp2->suivant;
             } else if (tmp1->col == tmp2->col) {
