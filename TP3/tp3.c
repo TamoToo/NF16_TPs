@@ -15,14 +15,7 @@ void afficherMenu() {
            "Choix : ");
 }
 
-char getChoix() {
-    char c = getchar();
-    /* suppression des caracteres dans stdin */
-    fflush(stdin);
-    return c;
-}
-
-void isPositive(int * n) {
+void isPositive(int *n) {
     while (*n <= 0) {
         printf("Le nombre ne peut pas être négatif ou nul\n");
         printf("Veuillez rentrer un nombre strictement positif : ");
@@ -36,6 +29,13 @@ void isBetween(int *n, int a, int b) {
         printf("Veuillez rentrez un nouveau nombre : ");
         scanf("%d", n);
     }
+}
+
+char getChoix() {
+    char c = getchar();
+    /* suppression des caracteres dans stdin */
+    fflush(stdin);
+    return c;
 }
 
 // Récupère le nombre de matrices à gérer dans le programme
@@ -227,20 +227,21 @@ void affecterValeur(matrice_creuse m, int i, int j, int val) {
 }
 
 void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
+    element *tmp1, *tmp1_prev, *tmp2, *new_elem;
+    int sum;
     for (int i = 0; i < m1.Nlignes; i++) {
-        element *tmp1 = m1.tab_lignes[i];
-        element *tmp1_prev = m1.tab_lignes[i];
-        element *tmp2 = m2.tab_lignes[i];
-        element *new_elem = NULL;
+        tmp1 = m1.tab_lignes[i];
+        tmp1_prev = m1.tab_lignes[i];
+        tmp2 = m2.tab_lignes[i];
         /* Tant qu'il y a des éléments dans les 2 listes, 3 cas se présentent :
             - 1 : la colonne de m1 > la colonne de m2 => val de m2 doit être ajoutée à m1 et on passe a la valeur suivante dans m2
-            - 2 : les deux colonnes sont égales (les deux entiers se trouvent au même endroit) => on somme les deux entiers et on passe aux valeurs suivantes dans m1 et m2
+            - 2 : les deux colonnes sont égales (les deux entiers se trouvent au même endroit) => on somme les deux entiers --> si la somme vaut 0, on doit supprimer le noeud, sinon, on passe simplement aux valeurs suivantes dans m1 et m2
             - 3 : la colonne de m1 < la colonne de m2 => on ne fait rien, on passe simplement à la prochaine valeur de m1
          */
         while (tmp1 != NULL && tmp2 != NULL) {
             if (tmp1->col > tmp2->col) {
                 new_elem = creerElement(tmp2->col, tmp2->val);
-                if (tmp1 == m1.tab_lignes[i]) { // S'il n'y a qu'un seul élément dans la ligne de m1 (tmp1 = tmp1_prev), on insère le nouvel élément en tête de la liste de m1
+                if (tmp1 == tmp1_prev) { // Si c'est le premier élément de m1, on insère le nouvel élément en tête de la liste de m1
                     m1.tab_lignes[i] = inserer_tete(new_elem, m1.tab_lignes[i]);
                     tmp1_prev = m1.tab_lignes[i];
                 } else {
@@ -250,9 +251,29 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
                 }
                 tmp2 = tmp2->suivant;
             } else if (tmp1->col == tmp2->col) {
-                tmp1->val += tmp2->val;
-                tmp1_prev = tmp1;
-                tmp1 = tmp1->suivant;
+                sum = tmp1->val + tmp2->val;
+                if(sum == 0){
+                    if(tmp1 == tmp1_prev){ // Si c'est le premier élément de m1
+                        if(tmp1->suivant == NULL){ // S'il n'y a qu'un seul élément dans m1
+                            free(tmp1);
+                            tmp1 = NULL;
+                            tmp1_prev = NULL;
+                        } else{
+                            tmp1 = tmp1->suivant;
+                            free(tmp1_prev);
+                            tmp1_prev = tmp1;
+                            m1.tab_lignes[i] = tmp1;
+                        }
+                    } else{
+                        tmp1_prev->suivant = tmp1->suivant;
+                        free(tmp1);
+                        tmp1 = tmp1_prev->suivant;
+                    }
+                } else{
+                    tmp1->val = sum;
+                    tmp1_prev = tmp1;
+                    tmp1 = tmp1->suivant;
+                }
                 tmp2 = tmp2->suivant;
             } else {
                 tmp1_prev = tmp1;
@@ -263,7 +284,7 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
         // Sinon on a fini car les valeurs restantes sont déjà présentes dans m1
         if (tmp1 == NULL) {
             if (tmp1 == tmp1_prev) { // S'il n'y a aucun élément dans la ligne de m1 (tmp1 = tmp1_prev = NULL), la ligne de m1 = la ligne de m2
-                m1.tab_lignes[i] = m2.tab_lignes[i];
+                m1.tab_lignes[i] = tmp2;
             } else { // Sinon, on ajoute la suite de la liste de m2 au suivant du précédent de tmp1
                 tmp1_prev->suivant = tmp2;
             }
