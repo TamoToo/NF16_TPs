@@ -254,16 +254,10 @@ void additionerMatrices(matrice_creuse m1, matrice_creuse m2) {
                 sum = tmp1->val + tmp2->val;
                 if(sum == 0){
                     if(tmp1 == tmp1_prev){ // Si c'est le premier élément de m1
-                        if(tmp1->suivant == NULL){ // S'il n'y a qu'un seul élément dans m1
-                            free(tmp1);
-                            tmp1 = NULL;
-                            tmp1_prev = NULL;
-                        } else{
-                            tmp1 = tmp1->suivant;
-                            free(tmp1_prev);
-                            tmp1_prev = tmp1;
-                            m1.tab_lignes[i] = tmp1;
-                        }
+                        tmp1 = tmp1->suivant;
+                        free(tmp1_prev);
+                        tmp1_prev = tmp1;
+                        m1.tab_lignes[i] = tmp1;
                     } else{
                         tmp1_prev->suivant = tmp1->suivant;
                         free(tmp1);
