@@ -3,7 +3,7 @@
 
 typedef struct Consultation{
     char* date;
-    char *motif;
+    char* motif;
     int niveauUrg;
     struct Consultation* suivant;
 }Consultation;
@@ -21,7 +21,10 @@ typedef Patient* Parbre;
 
 void afficherMenu();
 char getChoix();
-void getNomPrenom(char* nom, char* prenom);
+void getNomPrenom(char* str, int max_size, char* type);
+void getDate(char* date, int max_size);
+void getMotif(char* motif, int max_size);
+void getNivu(int* nivu);
 Patient* CreerPatient(char* nm, char* pr);
 void inserer_patient(Parbre* abr, char* nm, char* pr);
 Patient* rechercher_patient(Parbre* abr, char* nm);
