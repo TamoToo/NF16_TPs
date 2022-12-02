@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tp4.h"
+#include <string.h>
 
 #define MAX_LEN 20
 
@@ -43,12 +44,14 @@ int main() {
             case '5':
                 printf("\t\tSupprimer un patient\n");
                 getNomPrenom(nom, MAX_LEN, "nom");
+                supprimer_patient(&abr, nom);
                 break;
             case '6':
                 printf("\t\tCopier ou mettre à jour la liste des patients\n");
                 break;
             case '7':
                 printf("\t\tQuitter\n");
+                supprimer_arbre(&abr);
                 break;
             default:
                 printf("Choix incorrect\n");

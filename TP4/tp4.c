@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-#include <dos.h>
-#include <time.h>
 
 void afficherMenu() {
     printf("\n\n\t\t\tMENU\n"
@@ -112,11 +109,13 @@ Patient* rechercher_patient(Parbre* abr, char* nm) {
         }
     }
     printf("\nLe patient n'a pas été trouvé");
+    return NULL;
 }
 
 void affiche_fiche(Parbre* abr, char* nm) {
     int i = 1;
     Patient* patient = rechercher_patient(abr, nm);
+    if (patient == NULL) return;
     Consultation* tmp = patient->ListConsult;
     printf("\nNom : %s", patient->nom);
     printf("\nPrenom : %s", patient->prenom);
@@ -132,7 +131,7 @@ void affiche_fiche(Parbre* abr, char* nm) {
 }
 
 void afficher_patients(Parbre* abr) {
-    if(*abr == NULL) return;
+    if (*abr == NULL) return;
     printf("\n%s", (*abr)->nom);
     afficher_patients(&(*abr)->fils_gauche);
     afficher_patients(&(*abr)->fils_droit);
@@ -152,12 +151,9 @@ Consultation* CreerConsult(char* date, char* motif, int nivu) {
 
 void ajouter_consultation(Parbre* abr, char* nm, char* date, char* motif, int nivu) {
     Patient* patient = rechercher_patient(abr, nm);
+    if (patient == NULL) return;
     Consultation* tmp = patient->ListConsult;
     Consultation* tmp_prev;
-    if(patient == NULL){
-        printf("\nLe patient n'existe pas");
-        return;
-    }
     patient->nbrconsult++;
     if(tmp == NULL){
         printf("HERE");
@@ -173,17 +169,101 @@ void ajouter_consultation(Parbre* abr, char* nm, char* date, char* motif, int ni
     tmp_prev->suivant->suivant = tmp; // Ajouter au milieu de la liste
 }
 
-void supprimer_patient(Parbre* abr, char *nm){
+
+void liberer_patient(Patient* patient) {
+    Consultation* tmp = patient->ListConsult;
+    Consultation* tmp_prev = tmp;
+    while (tmp != NULL) {
+        tmp = tmp->suivant;
+        free(tmp_prev->date);
+        free(tmp_prev->motif);
+        free(tmp_prev);
+        tmp_prev = tmp;
+    }
+    free(patient->nom);
+    free(patient->prenom);
+    free(patient);
+}
+
+
+Patient* min_abr(Patient* patient) {
+    Patient* tmp = patient;
+    Patient* tmp_prev = NULL;
+    while (tmp->fils_gauche != NULL) {
+        tmp_prev = tmp;
+        tmp = tmp->fils_gauche;
+    }
+    if (tmp_prev != NULL) { // Si patient a au moins un fils gauche alors le fils gauche du père du noeud minimal pointe désormais sur NULL
+       tmp_prev->fils_gauche = NULL;
+    }
+    return tmp;
+}
+
+
+void supprimer_patient(Parbre* abr, char *nm) {
+    Patient* tmp = (*abr);
+    Patient* tmp_prev = NULL;
+    Patient* succ;
+    int trouve = 0;
+    int droite;
     if(*abr == NULL){
         printf("\nIl n'existe aucun patient dans l'arbre");
         return;
     }
-    Patient* patient = rechercher_patient(abr, nm);
-    if (patient == NULL){
-        printf("Le patient n'exsite pas");
+    // Recherche du patient à supprimer (on n'utilise pas la fonction rechercher_patient afin de garder l'information sur le père)
+    while(tmp != NULL && trouve == 0){
+        if(strcmp(tmp->nom, nm) > 0) {
+            tmp_prev = tmp;
+            tmp = tmp->fils_gauche;
+        } else if (strcmp(tmp->nom, nm) < 0) {
+            tmp_prev = tmp;
+            tmp = tmp->fils_droit;
+        } else trouve = 1;
+    }
+    if (trouve == 0){
+        printf("\nLe patient n'exsite pas");
         return;
     }
+    if (tmp_prev != NULL) droite = strcmp(tmp_prev->nom, nm) < 0;
+    if (tmp->fils_gauche == NULL && tmp->fils_droit == NULL) { // Le noeud à supprimer n'a aucun fils
+        if (tmp_prev == NULL) *abr = NULL; // Si on veut supprimer la racine de l'arbre
+        else {
+            // Trouver si le noeud à supprimer se trouve à droite ou à gauche du père
+            if (droite) tmp_prev->fils_droit = NULL;
+            else tmp_prev->fils_gauche = NULL;
+        }
+    } else if (tmp->fils_gauche == NULL) { // Le noeud à supprimer possède un seul fils (droit)
+        if (tmp_prev == NULL) *abr = tmp->fils_droit; // Si on veut supprimer la racine de l'arbre
+        else {
+            if (droite) tmp_prev->fils_droit = tmp->fils_droit;
+            else tmp_prev->fils_gauche = tmp->fils_droit;
+        }
+    } else if (tmp->fils_droit == NULL) { // Le noeud à supprimer possède un seul fils (gauche)
+        if (tmp_prev == NULL) *abr = tmp->fils_gauche; // Si on veut supprimer la racine de l'arbre
+        else {
+            if (droite) tmp_prev->fils_droit = tmp->fils_gauche;
+            else tmp_prev->fils_gauche = tmp->fils_gauche;
+        }
+    } else { // Le noeud à supprimer possède deux fils
+        succ = min_abr(tmp->fils_droit); // Successeurs de tmp
+        if (tmp_prev == NULL) *abr = succ; // Si on veut supprimer la racine de l'arbre
+        else {
+            // On remplace le fils correspondant du père du noeud à supprimer par le successeurs de tmp
+            if (droite) tmp_prev->fils_droit = succ;
+            else tmp_prev->fils_gauche = succ;
+        }
+        succ->fils_gauche = tmp->fils_gauche;
+        // On doit vérifier si le successeur n'est pas le fils droit de tmp (sinon boucle infinie)
+        if (succ != tmp->fils_droit) succ->fils_droit = tmp->fils_droit;
+    }
+    liberer_patient(tmp);
+}
 
+void supprimer_arbre(Parbre *abr) {
+    if (*abr == NULL) return;
+    supprimer_arbre(&(*abr)->fils_gauche);
+    supprimer_arbre(&(*abr)->fils_droit);
+    liberer_patient(*abr);
 }
 
 

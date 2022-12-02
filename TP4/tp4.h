@@ -30,8 +30,11 @@ void inserer_patient(Parbre* abr, char* nm, char* pr);
 Patient* rechercher_patient(Parbre* abr, char* nm);
 void affiche_fiche(Parbre* abr, char* nm);
 void afficher_patients(Parbre* abr);
+Patient* min_abr(Patient* patient);
 Consultation* CreerConsult(char* date, char* motif, int nivu);
 void ajouter_consultation(Parbre* abr, char* nm, char* date, char* motif, int nivu);
 void supprimer_patient(Parbre* abr, char *nm);
+void liberer_patient(Patient* patient);
+void supprimer_arbre(Parbre *abr);
 
 #endif //TP4_TP4_H
