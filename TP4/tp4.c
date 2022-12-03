@@ -23,10 +23,10 @@ char getChoix() {
 }
 
 
-void getNomPrenom(char* str, int max_size, char* type){
+void getNomPrenom (char* str, int max_size, char* type) {
     printf("\nVeuillez entrez le %s du patient: ", type);
     fgets(str, max_size, stdin);
-    while(*str) {
+    while (*str) {
         if ( *str >= 'a' && *str <= 'z' ) {
             *str = *str - 32;
         }
@@ -34,32 +34,32 @@ void getNomPrenom(char* str, int max_size, char* type){
     }
 }
 
-void getDate(char* date, int max_size){
+void getDate (char* date, int max_size) {
     int day, month, year;
     printf("\nQuelle est la date de la consultation (JJ-MM-AAAA) ? : ");
     fgets(date, max_size, stdin);
-    while(sscanf(date, "%2d-%2d-%4d", &day, &month, &year) != 3){
+    while (sscanf(date, "%2d-%2d-%4d", &day, &month, &year) != 3) {
         printf("\nLe format est incorrect, veuillez réessayer : ");
         fgets(date, max_size, stdin);
     }
 }
 
-void getMotif(char* motif, int max_size){
+void getMotif (char* motif, int max_size) {
     printf("\nQuel est le motif de la consultation ? : ");
     fgets(motif, max_size, stdin);
 }
 
-void getNivu(int* nivu){ // On suppose que le niveau d'urgence doit être compris entre 1 et 5
+void getNivu (int* nivu) { // On suppose que le niveau d'urgence doit être compris entre 1 et 5
     printf("\nQuelle est le niveau d'urgence de la consutlation (1-5) ? : ");
     scanf("%d", nivu);
-    while(*nivu < 1 || *nivu > 5){
+    while (*nivu < 1 || *nivu > 5) {
         printf("\nNiveau d'urgence incorrect, veuillez réessayer : ");
         scanf("%d", nivu);
     }
 }
 
 
-Patient* CreerPatient(char* nm, char* pr) {
+Patient* CreerPatient (char* nm, char* pr) {
     Patient* new_patient = (Patient*)malloc(sizeof(Patient));
     if (new_patient == NULL) return NULL;
     new_patient->nom = malloc(sizeof(nm));
@@ -70,12 +70,13 @@ Patient* CreerPatient(char* nm, char* pr) {
     new_patient->nbrconsult = 0;
     new_patient->fils_gauche = NULL;
     new_patient->fils_droit = NULL;
+    return new_patient;
 }
 
-void inserer_patient(Parbre* abr, char* nm, char* pr) {
+void inserer_patient (Parbre* abr, char* nm, char* pr) {
     Patient* tmp = (*abr);
     Patient* tmp_prev = NULL;
-    while(tmp != NULL) {
+    while (tmp != NULL) {
         if (strcmp(tmp->nom, nm) < 0) {
             tmp_prev = tmp;
             tmp = tmp->fils_droit;
@@ -90,17 +91,16 @@ void inserer_patient(Parbre* abr, char* nm, char* pr) {
         }
     }
     tmp = CreerPatient(nm, pr);
-    if(tmp_prev != NULL) {
+    if (tmp_prev != NULL) {
         if (strcmp(tmp_prev->nom, nm) < 0) tmp_prev->fils_droit = tmp;
         else tmp_prev->fils_gauche = tmp;
-        return;
     }
-    *abr = CreerPatient(nm, pr);
+    else *abr = tmp;
 }
 
-Patient* rechercher_patient(Parbre* abr, char* nm) {
+Patient* rechercher_patient (Parbre* abr, char* nm) {
     Patient* tmp = (*abr);
-    while(tmp != NULL){
+    while (tmp != NULL){
         if(strcmp(tmp->nom, nm) == 0) return tmp;
         if(strcmp(tmp->nom, nm) > 0) {
             tmp = tmp->fils_gauche;
@@ -112,7 +112,7 @@ Patient* rechercher_patient(Parbre* abr, char* nm) {
     return NULL;
 }
 
-void affiche_fiche(Parbre* abr, char* nm) {
+void affiche_fiche (Parbre* abr, char* nm) {
     int i = 1;
     Patient* patient = rechercher_patient(abr, nm);
     if (patient == NULL) return;
@@ -130,16 +130,16 @@ void affiche_fiche(Parbre* abr, char* nm) {
     }
 }
 
-void afficher_patients(Parbre* abr) {
+void afficher_patients (Parbre* abr) {
     if (*abr == NULL) return;
-    printf("\n%s", (*abr)->nom);
+    printf("\nNom : %s, Prénom : %s, Nombre de consultation : %d", (*abr)->nom, (*abr)->prenom, (*abr)->nbrconsult);
     afficher_patients(&(*abr)->fils_gauche);
     afficher_patients(&(*abr)->fils_droit);
 }
 
-Consultation* CreerConsult(char* date, char* motif, int nivu) {
+Consultation* CreerConsult (char* date, char* motif, int nivu) {
     Consultation* new_consult = (Consultation*) malloc(sizeof(Consultation));
-    if(new_consult == NULL) return NULL;
+    if (new_consult == NULL) return NULL;
     new_consult->date = malloc(sizeof(date));
     strcpy(new_consult->date, date);
     new_consult->motif = malloc(sizeof(motif));
@@ -149,28 +149,39 @@ Consultation* CreerConsult(char* date, char* motif, int nivu) {
     return new_consult;
 }
 
-void ajouter_consultation(Parbre* abr, char* nm, char* date, char* motif, int nivu) {
+void ajouter_consultation (Parbre* abr, char* nm, char* date, char* motif, int nivu) {
     Patient* patient = rechercher_patient(abr, nm);
     if (patient == NULL) return;
     Consultation* tmp = patient->ListConsult;
     Consultation* tmp_prev;
     patient->nbrconsult++;
-    if(tmp == NULL){
-        printf("HERE");
+    if (tmp == NULL){
         patient->ListConsult = CreerConsult(date, motif, nivu);
         return;
     }
-    while(tmp != NULL && strcmp(tmp->date, date) < 0) {
+    while (tmp != NULL && strcmp(tmp->date, date) < 0) {
         tmp_prev = tmp;
         tmp = tmp->suivant;
     }
     tmp_prev->suivant = CreerConsult(date, motif, nivu);
-    if(tmp == NULL) return; // Ajouter en fin de liste
+    if (tmp == NULL) return; // Ajouter en fin de liste
     tmp_prev->suivant->suivant = tmp; // Ajouter au milieu de la liste
 }
 
+Patient* min_abr (Patient* patient) {
+    Patient* tmp = patient;
+    Patient* tmp_prev = NULL;
+    while (tmp->fils_gauche != NULL) {
+        tmp_prev = tmp;
+        tmp = tmp->fils_gauche;
+    }
+    if (tmp_prev != NULL) { // Si patient a au moins un fils gauche alors le fils gauche du père du noeud minimal pointe désormais sur NULL
+        tmp_prev->fils_gauche = NULL;
+    }
+    return tmp;
+}
 
-void liberer_patient(Patient* patient) {
+void liberer_patient (Patient* patient) {
     Consultation* tmp = patient->ListConsult;
     Consultation* tmp_prev = tmp;
     while (tmp != NULL) {
@@ -182,37 +193,23 @@ void liberer_patient(Patient* patient) {
     }
     free(patient->nom);
     free(patient->prenom);
+    free(patient->ListConsult);
     free(patient);
 }
 
-
-Patient* min_abr(Patient* patient) {
-    Patient* tmp = patient;
-    Patient* tmp_prev = NULL;
-    while (tmp->fils_gauche != NULL) {
-        tmp_prev = tmp;
-        tmp = tmp->fils_gauche;
-    }
-    if (tmp_prev != NULL) { // Si patient a au moins un fils gauche alors le fils gauche du père du noeud minimal pointe désormais sur NULL
-       tmp_prev->fils_gauche = NULL;
-    }
-    return tmp;
-}
-
-
-void supprimer_patient(Parbre* abr, char *nm) {
+void supprimer_patient (Parbre* abr, char *nm) {
     Patient* tmp = (*abr);
     Patient* tmp_prev = NULL;
     Patient* succ;
     int trouve = 0;
     int droite;
-    if(*abr == NULL){
+    if (*abr == NULL) {
         printf("\nIl n'existe aucun patient dans l'arbre");
         return;
     }
     // Recherche du patient à supprimer (on n'utilise pas la fonction rechercher_patient afin de garder l'information sur le père)
-    while(tmp != NULL && trouve == 0){
-        if(strcmp(tmp->nom, nm) > 0) {
+    while (tmp != NULL && trouve == 0) {
+        if (strcmp(tmp->nom, nm) > 0) {
             tmp_prev = tmp;
             tmp = tmp->fils_gauche;
         } else if (strcmp(tmp->nom, nm) < 0) {
@@ -220,7 +217,7 @@ void supprimer_patient(Parbre* abr, char *nm) {
             tmp = tmp->fils_droit;
         } else trouve = 1;
     }
-    if (trouve == 0){
+    if (trouve == 0) {
         printf("\nLe patient n'exsite pas");
         return;
     }
@@ -259,11 +256,18 @@ void supprimer_patient(Parbre* abr, char *nm) {
     liberer_patient(tmp);
 }
 
-void supprimer_arbre(Parbre *abr) {
-    if (*abr == NULL) return;
+void supprimer_arbre (Parbre *abr) {
+    if ((*abr) == NULL) return;
     supprimer_arbre(&(*abr)->fils_gauche);
     supprimer_arbre(&(*abr)->fils_droit);
     liberer_patient(*abr);
+}
+
+void maj (Parbre* abr1, Parbre* abr2) {
+    while ((*abr2) != NULL) {
+        supprimer_patient(&(*abr2), (*abr2)->nom);
+    }
+
 }
 
 
