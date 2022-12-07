@@ -58,7 +58,6 @@ void getNivu (int* nivu) { // On suppose que le niveau d'urgence doit être comp
     }
 }
 
-
 Patient* CreerPatient (char* nm, char* pr) {
     Patient* new_patient = (Patient*)malloc(sizeof(Patient));
     if (new_patient == NULL) return NULL;
@@ -132,7 +131,7 @@ void affiche_fiche (Parbre* abr, char* nm) {
 
 void afficher_patients (Parbre* abr) {
     if (*abr == NULL) return;
-    printf("\nNom : %s, Prénom : %s, Nombre de consultation : %d", (*abr)->nom, (*abr)->prenom, (*abr)->nbrconsult);
+    printf("\nNom : %s", (*abr)->nom);
     afficher_patients(&(*abr)->fils_gauche);
     afficher_patients(&(*abr)->fils_droit);
 }
@@ -153,19 +152,21 @@ void ajouter_consultation (Parbre* abr, char* nm, char* date, char* motif, int n
     Patient* patient = rechercher_patient(abr, nm);
     if (patient == NULL) return;
     Consultation* tmp = patient->ListConsult;
-    Consultation* tmp_prev;
+    Consultation* tmp_prev = NULL;
     patient->nbrconsult++;
-    if (tmp == NULL){
-        patient->ListConsult = CreerConsult(date, motif, nivu);
-        return;
-    }
     while (tmp != NULL && strcmp(tmp->date, date) < 0) {
         tmp_prev = tmp;
         tmp = tmp->suivant;
     }
-    tmp_prev->suivant = CreerConsult(date, motif, nivu);
-    if (tmp == NULL) return; // Ajouter en fin de liste
-    tmp_prev->suivant->suivant = tmp; // Ajouter au milieu de la liste
+    if (tmp_prev == NULL) { // Ajouter en tête
+        tmp_prev = CreerConsult(date, motif, nivu);
+        tmp_prev->suivant = tmp;
+        patient->ListConsult = tmp_prev;
+    } else {
+        tmp_prev->suivant = CreerConsult(date, motif, nivu);
+        if (tmp == NULL) return; // Ajouter en fin de liste
+        tmp_prev->suivant->suivant = tmp; // Ajouter au milieu de la liste
+    }
 }
 
 Patient* min_abr (Patient* patient) {
@@ -183,17 +184,16 @@ Patient* min_abr (Patient* patient) {
 
 void liberer_patient (Patient* patient) {
     Consultation* tmp = patient->ListConsult;
-    Consultation* tmp_prev = tmp;
+    Consultation* tmp_prev;
     while (tmp != NULL) {
+        tmp_prev = tmp;
         tmp = tmp->suivant;
         free(tmp_prev->date);
         free(tmp_prev->motif);
         free(tmp_prev);
-        tmp_prev = tmp;
     }
     free(patient->nom);
     free(patient->prenom);
-    free(patient->ListConsult);
     free(patient);
 }
 
@@ -267,7 +267,10 @@ void maj (Parbre* abr1, Parbre* abr2) {
     while ((*abr2) != NULL) {
         supprimer_patient(&(*abr2), (*abr2)->nom);
     }
-
+    if((*abr1)!=NULL)
+        inserer_patient(abr2,(*abr1)->nom,(*abr1)->prenom);
+    if((*abr1)->fils_gauche!=NULL)
+        maj(&((*abr1)->fils_gauche),abr2);
+    if((*abr1)->fils_droit!=NULL)
+        maj(&((*abr1)->fils_droit),abr2);
 }
-
-
