@@ -43,6 +43,7 @@ int main() {
                 break;
             case '6':
                 printf("\t\tCopier ou mettre à jour la liste des patients\n");
+                maj(&abr1, &abr2);
                 break;
             case '7':
                 printf("\t\tQuitter\n");

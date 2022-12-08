@@ -36,6 +36,7 @@ void ajouter_consultation(Parbre* abr, char* nm, char* date, char* motif, int ni
 void supprimer_patient(Parbre* abr, char *nm);
 void liberer_patient(Patient* patient);
 void supprimer_arbre(Parbre *abr);
+void insertion_maj (Parbre* abr1, Parbre* abr2);
 void maj (Parbre* abr1, Parbre* abr2);
 
 #endif //TP4_TP4_H

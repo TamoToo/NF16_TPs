@@ -22,7 +22,6 @@ char getChoix() {
     return c;
 }
 
-
 void getNomPrenom (char* str, int max_size, char* type) {
     printf("\nVeuillez entrez le %s du patient: ", type);
     fgets(str, max_size, stdin);
@@ -267,14 +266,16 @@ void supprimer_arbre (Parbre *abr) {
     liberer_patient(*abr);
 }
 
+void insertion_maj (Parbre* abr1, Parbre* abr2) {
+    if ((*abr1) == NULL) return;
+    inserer_patient(abr2,(*abr1)->nom,(*abr1)->prenom);
+    insertion_maj((&(*abr1)->fils_gauche), abr2);
+    insertion_maj((&(*abr1)->fils_droit), abr2);
+}
+
 void maj (Parbre* abr1, Parbre* abr2) {
-    while ((*abr2) != NULL) {
+    while ((*abr2) != NULL) { // Verifier que l'abr2 est bien vide
         supprimer_patient(&(*abr2), (*abr2)->nom);
     }
-    if((*abr1)!=NULL)
-        inserer_patient(abr2,(*abr1)->nom,(*abr1)->prenom);
-    if((*abr1)->fils_gauche!=NULL)
-        maj(&((*abr1)->fils_gauche),abr2);
-    if((*abr1)->fils_droit!=NULL)
-        maj(&((*abr1)->fils_droit),abr2);
+    insertion_maj(abr1, abr2);
 }
