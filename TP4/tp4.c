@@ -61,9 +61,11 @@ void getNivu (int* nivu) { // On suppose que le niveau d'urgence doit être comp
 Patient* CreerPatient (char* nm, char* pr) {
     Patient* new_patient = (Patient*)malloc(sizeof(Patient));
     if (new_patient == NULL) return NULL;
-    new_patient->nom = malloc(sizeof(nm));
+    new_patient->nom = malloc(sizeof(char) * (strlen(nm) + 1));
+    if (new_patient->nom == NULL) return NULL;
     strcpy(new_patient->nom, nm);
-    new_patient->prenom = malloc(sizeof(pr));
+    new_patient->prenom = malloc(sizeof(char) * (strlen(pr) + 1));
+    if (new_patient->prenom == NULL) return NULL;
     strcpy(new_patient->prenom, pr);
     new_patient->ListConsult = NULL;
     new_patient->nbrconsult = 0;
@@ -139,9 +141,11 @@ void afficher_patients (Parbre* abr) {
 Consultation* CreerConsult (char* date, char* motif, int nivu) {
     Consultation* new_consult = (Consultation*) malloc(sizeof(Consultation));
     if (new_consult == NULL) return NULL;
-    new_consult->date = malloc(sizeof(date));
+    new_consult->date = malloc(sizeof(char) * (strlen(date) + 1));
+    if (new_consult->date == NULL) return NULL;
     strcpy(new_consult->date, date);
-    new_consult->motif = malloc(sizeof(motif));
+    new_consult->motif = malloc(sizeof(char) * (strlen(motif) + 1));
+    if (new_consult->motif == NULL) return NULL;
     strcpy(new_consult->motif, motif);
     new_consult->niveauUrg = nivu;
     new_consult->suivant = NULL;
