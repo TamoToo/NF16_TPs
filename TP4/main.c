@@ -8,6 +8,7 @@ int main() {
     Parbre abr1 = NULL, abr2 = NULL;
     char nom[MAX_LEN], prenom[MAX_LEN], date[MAX_LEN], motif[MAX_LEN];
     int nivu;
+    int num;
     do {
         fflush(stdin);
         afficherMenu();
@@ -34,7 +35,10 @@ int main() {
                 break;
             case '4':
                 printf("\t\tAfficher la liste des patients\n");
-                afficher_patients(&abr1);
+                printf("Quel arbre ? : ");
+                scanf("%d", &num);
+                if (num == 1) afficher_patients(&abr1);
+                else afficher_patients(&abr2);
                 break;
             case '5':
                 printf("\t\tSupprimer un patient\n");
@@ -44,6 +48,8 @@ int main() {
             case '6':
                 printf("\t\tCopier ou mettre à jour la liste des patients\n");
                 maj(&abr1, &abr2);
+                printf("\nLe nouvel arbre à été créer !\n");
+                afficher_patients(&abr2);
                 break;
             case '7':
                 printf("\t\tQuitter\n");

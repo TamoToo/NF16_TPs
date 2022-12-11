@@ -259,13 +259,6 @@ void supprimer_patient (Parbre* abr, char *nm) {
     liberer_patient(tmp);
 }
 
-void supprimer_arbre (Parbre *abr) {
-    if ((*abr) == NULL) return;
-    supprimer_arbre(&(*abr)->fils_gauche);
-    supprimer_arbre(&(*abr)->fils_droit);
-    liberer_patient(*abr);
-}
-
 void insertion_maj (Parbre* abr1, Parbre* abr2) {
     if ((*abr1) == NULL) return;
     inserer_patient(abr2,(*abr1)->nom,(*abr1)->prenom);
@@ -274,8 +267,15 @@ void insertion_maj (Parbre* abr1, Parbre* abr2) {
 }
 
 void maj (Parbre* abr1, Parbre* abr2) {
-    while ((*abr2) != NULL) { // Verifier que l'abr2 est bien vide
+    /*while ((*abr2) != NULL) { // Verifier que l'abr2 est bien vide
         supprimer_patient(&(*abr2), (*abr2)->nom);
-    }
+    }*/
     insertion_maj(abr1, abr2);
+}
+
+void supprimer_arbre (Parbre *abr) {
+    if ((*abr) == NULL) return;
+    supprimer_arbre(&(*abr)->fils_gauche);
+    supprimer_arbre(&(*abr)->fils_droit);
+    liberer_patient(*abr);
 }
